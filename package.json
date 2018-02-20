@@ -1,0 +1,28 @@
+{
+  "name": "tinyurl",
+  "version": "1.0.0",
+  "description": "TinyUrl Knockoff",
+  "main": "index.js",
+  "dependencies": {
+    "ejs": "^1.0.0",
+    "express": "^4.16.2"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidHaynesHasGitHub/knock-off-tinyurl.git"
+  },
+  "keywords": [
+    "tinyurl",
+    "lhl",
+    "project"
+  ],
+  "author": "David Haynes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidHaynesHasGitHub/knock-off-tinyurl/issues"
+  },
+  "homepage": "https://github.com/DavidHaynesHasGitHub/knock-off-tinyurl#readme"
+}
