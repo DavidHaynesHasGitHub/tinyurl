@@ -21,6 +21,7 @@ app.get("/urls/new", (req, res) => {
   res.render("pages/urls_new");
 });
 
+//shows original plus new short url
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
     console.log(shortURL)
@@ -29,10 +30,22 @@ app.get("/urls/:shortURL", (req, res) => {
     res.render('pages/urls_show',{shortURL:shortURL, longURL:longURL})
 });
 
+//adds new url to database
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
    urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
+});
+
+//deletes element in database
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id]
+  res.redirect('/urls/');
+});
+
+app.post("/urls/:id/edit", (req, res) => {
+   urlDatabase[req.params.id]
+  res.redirect('/urls/');
 });
 
 //generates random number for hash generator
