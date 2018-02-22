@@ -22,16 +22,15 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortID] = req.body
-    res.redirect('/urls')
+  let shortURL = req.params.shortURL
+  let longURL = urlDatabase[shortURL]
+  res.render('pages/urls_edit', {shortURL:shortURL, longURL:longURL})
 });
 //shows original plus new short url
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
-    console.log(shortURL)
-  let longURL = urlDatabase[shortURL];
-    console.log(longURL)
-    res.render('pages/urls_edit',{shortURL:shortURL, longURL:longURL})
+    urlDatabase[shortURL] = req.body.longURL;
+    res.redirect('/urls')
 });
 
 //adds new url to database

@@ -13,11 +13,7 @@
         <form method = "POST" action = "/urls/<%= url %>/delete" style="display: inline;">
           <button> Delete </button>
         </form>
-
-        <form method = "POST" action = "/urls/<%= url %>/edit" style="display: inline;">
-          <button> Edit </button>
-        </form>
-
+        <a href="/urls/<%= url %>">edit</a>
          </li>
         <% }; %>
 
