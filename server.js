@@ -17,16 +17,32 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/urls", (req, res) => {
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+app.get('/urls', (req, res) => {
   let templateVars = {
        urlDatabase: urlDatabase,
        username: req.cookies.usernameCookie
      };
-
      console.log(templateVars.username)
-  res.render("pages/urls_index", templateVars);
+  res.render('pages/urls_index', templateVars);
 });
 
+
+app.get('/register', (req, res){
+  res.render('pages/register')
+})
 app.get("/urls/new", (req, res) => {
   let templateVars = {
        urlDatabase: urlDatabase,
@@ -101,4 +117,4 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-//this is on the develop branch
+//this is on the login branch
