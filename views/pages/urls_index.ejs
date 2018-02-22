@@ -5,10 +5,11 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
 <body style="font-size:20px; padding:50px;">
   <% include ../partials/_header %>
+
     <ul>
-      <% for(var url in urls) { %>
+      <% for(var url in urlDatabase) { %>
         <li>
-          <%= url + ': ' + urls[url] %>
+          <%= url + ': ' + urlDatabase[url] %>
 
         <form method = "POST" action = "/urls/<%= url %>/delete" style="display: inline;">
           <button> Delete </button>

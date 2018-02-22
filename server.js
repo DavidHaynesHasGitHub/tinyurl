@@ -1,6 +1,11 @@
 var express = require("express");
 var app = express();
+var express = require('express')
+var cookieParser = require('cookie-parser')
 var PORT = process.env.PORT || 8080;
+
+var app = express()
+app.use(cookieParser())
 
 app.set("view engine", "ejs");
 
@@ -13,19 +18,32 @@ var urlDatabase = {
 };
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase};
+  let templateVars = {
+       urlDatabase: urlDatabase,
+       username: req.cookies.usernameCookie
+     };
+
+     console.log(templateVars.username)
   res.render("pages/urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("pages/urls_new");
+  let templateVars = {
+       urlDatabase: urlDatabase,
+       username: req.cookies.usernameCookie
+     };
+  res.render("pages/urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let shortURL = req.params.shortURL
-  let longURL = urlDatabase[shortURL]
-  res.render('pages/urls_edit', {shortURL:shortURL, longURL:longURL})
+  let templateVars = {
+        shortURL: req.params.shortURL,
+        urlDatabase: urlDatabase,
+        username: req.cookies.usernameCookie
+    };
+  res.render('pages/urls_edit', templateVars)
 });
+
 //shows original plus new short url
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
@@ -34,16 +52,30 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 //adds new url to database
-app.post("/urls", (req, res) => {
+app.post("/urls/", (req, res) => {
   let shortURL = generateRandomString();
    urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/`);
 });
 
 //deletes element in database
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL]
   res.redirect('/urls/');
+});
+
+
+// handles login form
+app.post("/login", (req, res) =>{
+  let username = req.body.username
+  res.cookie('usernameCookie', username)
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) =>{
+  let username = req.body.username
+  res.clearCookie('usernameCookie')
+  res.redirect("/urls");
 });
 
 //generates random number for hash generator
@@ -68,3 +100,5 @@ String.prototype.hashCode = function() {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+//this is on the develop branch

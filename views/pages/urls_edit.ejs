@@ -6,14 +6,15 @@
 <body style="font-size:20px; padding:50px;">
   <% include ../partials/_header %>
 
-  <h3><%= 'Your new short url is:' + shortURL %></h3>
+  <h3><%= 'Your new short url is: ' + shortURL %></h3>
 
   <form method="POST" action="/urls/<%=shortURL%>/edit" style="display: inline;">
 
     <label for="longURL">Your long url</label>
 
-      <input id="longURL" type="text" name="longURL" placeholder= '<%=longURL%>' style="width: 300px">
+      <input id="longURL" type="text" name="longURL" placeholder = '<%= urlDatabase[shortURL] %>' style="width: 300px">
       <input type="submit" value="Submit">
+
   </form>
 
 </body>
