@@ -21,13 +21,17 @@ app.get("/urls/new", (req, res) => {
   res.render("pages/urls_new");
 });
 
-//shows original plus new short url
 app.get("/urls/:shortURL", (req, res) => {
+  urlDatabase[req.params.shortID] = req.body
+    res.redirect('/urls')
+});
+//shows original plus new short url
+app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
     console.log(shortURL)
   let longURL = urlDatabase[shortURL];
     console.log(longURL)
-    res.render('pages/urls_show',{shortURL:shortURL, longURL:longURL})
+    res.render('pages/urls_edit',{shortURL:shortURL, longURL:longURL})
 });
 
 //adds new url to database
@@ -38,13 +42,8 @@ app.post("/urls", (req, res) => {
 });
 
 //deletes element in database
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id]
-  res.redirect('/urls/');
-});
-
-app.post("/urls/:id/edit", (req, res) => {
-   urlDatabase[req.params.id]
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL]
   res.redirect('/urls/');
 });
 

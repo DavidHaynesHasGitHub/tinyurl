@@ -2,19 +2,21 @@
 <html lang="en">
 
 <head></head>
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
 <body style="font-size:20px; padding:50px;">
   <% include ../partials/_header %>
     <ul>
       <% for(var url in urls) { %>
         <li>
           <%= url + ': ' + urls[url] %>
-        <form method="POST" action="/urls/9sm5xK/delete" style="display: inline;">
-            <button type="submit">Delete</button>
-          </form>
-          <form method="POST" action="/urls/9sm5xK/edit" style="display: inline;">
-              <button type="submit">Edit</button>
-            </form>
+
+        <form method = "POST" action = "/urls/<%= url %>/delete" style="display: inline;">
+          <button> Delete </button>
+        </form>
+
+        <form method = "POST" action = "/urls/<%= url %>/edit" style="display: inline;">
+          <button> Edit </button>
+        </form>
 
          </li>
         <% }; %>
@@ -22,5 +24,5 @@
     </ul>
 </body>
 
-<a href="pages/urls_new">Create new URL</a>
+<a href="/urls/new">Create new URL</a>
 </html>
