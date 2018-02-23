@@ -10,21 +10,23 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
-let urlPerUserID = {
-    userRandomID: {
-        'b2xVn2': 'http://www.lighthouselabs.ca',
-        '9sm5xK': 'http://www.google.com'
-    },
-    user2RandomID: {
-        'test': 'test.com'
-    }
+var urlData = {
+  "b2xVn2": {
+    shortURL: "b2xVn2",
+    longURL : "http://www.lighthouselabs.ca",
+    userID : "userRamdomID"
+  },
+  "9sm5xK": {
+    shortURL: "9sm5xK",
+    longURL : "http://www.facebook.ca",
+    userID : "userRamdom2ID"
+  },
+  "12334": {
+    shortURL: '12334',
+    longURL : "http://www.yahoo.ca",
+    userID : "userRamdom3ID"
+  }
 };
-
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-
 
 let usersDB = {
   "userRandomID": {
@@ -40,48 +42,58 @@ let usersDB = {
 }
 //ALL GET REQUESTS
 app.get('/urls', (req, res) => {
-  let templateVars = {
-       urlDatabase: urlDatabase,
-       user: usersDB[req.cookies.userID]
-  };
   if(req.cookies.userID){
+    let user = usersDB[req.cookies.userID]
+    let urlsTemp = {}
+    for(let key in urlData){
+       let checkData = urlData[key]
+        if(checkData.userID === user.id){
+          urlsTemp[key] = checkData
+        }
+      };
+      console.log(urlsTemp)
+    let templateVars = {
+      urls: urlsTemp,
+      user: user
+    };
     res.render('pages/urls_index', templateVars);
   } else {
     res.render('pages/home')
   }
 });
 
+//loads homoe page
 app.get('/home', (req, res) => {
   res.render('pages/home');
 });
 
+//loads registration page
 app.get('/register', (req, res) => {
-  console.log('REGISTER PAGE RENDERED')
   res.render('pages/register');
 });
 
+//only renders urls/new if user is logged in
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-       urlDatabase: urlDatabase,
-       usersDB: usersDB
-     };
-     if(req.cookies.userID){
-       res.render("pages/urls_new", templateVars);
-     } else {
-       res.render('pages/home')
-     }
+  if(req.cookies.userID){
+    let templateVars = {
+      urlData: urlData,
+      user: usersDB[req.cookies.userID]
+    };
+    res.render("pages/urls_new", templateVars);
+  } else {
+    res.render('pages/home')
+    }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {
-        shortURL: req.params.shortURL,
-        urlDatabase: urlDatabase,
-        user: req.cookies.userID
+  if(req.cookies.userID){
+    let templateVars = {
+      urlData: urlData,
+      user: usersDB[req.cookies.userID]
     };
-    if(req.cookies.userID){
-      res.render('pages/urls_edit', templateVars)
-    } else {
-      res.render('pages/home')
+    res.render('pages/urls_edit', templateVars)
+  } else {
+    res.render('pages/home')
     }
 });
 
@@ -89,28 +101,38 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //shows original plus new short url
 app.post("/urls/:shortURL/edit", (req, res) => {
-  let shortURL = req.params.shortURL;
-    urlDatabase[shortURL] = req.body.longURL;
+    let templateVars = {
+      urlData: urlData,
+      user: usersDB[req.cookies.userID]
+    }
     res.redirect('/urls')
 });
 
 //adds new url to database
 app.post("/urls/", (req, res) => {
   let shortURL = generateRandomString();
-   urlDatabase[shortURL] = req.body.longURL;
+  var tempObject = {};
+  tempObject = {
+    shortURL: shortURL,
+    longURL: req.body.longURL,
+    userID: req.cookies.userID
+  };
+  urlData[shortURL] = tempObject;
   res.redirect(`/urls/`);
 });
 
 //deletes element in database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL]
+  delete urlData[req.params.shortURL]
   res.redirect('/urls/');
 });
 
+//sends to registration form
 app.post('/registerform', (req, res) => {
     res.render('pages/register');
 });
 
+//generates unique user id and adds data to userDB
 app.post('/register', (req, res) => {
   let newID = generateRandomString();
   let newUser = {};
@@ -119,12 +141,12 @@ app.post('/register', (req, res) => {
     email : req.body.email,
     password : req.body.password
   };
-  res.cookie('userID', newUser.id)
   usersDB[newID] = newUser
   res.redirect('/home');
 });
 // handles login form
 
+//checks userDB for if user email is found then checks if password is correct
 app.post("/login", (req, res) =>{
   let user;
   for (let userID in usersDB){
@@ -146,6 +168,7 @@ app.post("/login", (req, res) =>{
   }
 });
 
+//clears userID cookie and redirects home
 app.post("/logout", (req, res) =>{
   let username = req.body.email
   res.clearCookie('userID')
@@ -174,5 +197,3 @@ String.prototype.hashCode = function() {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-//asdfvaweara

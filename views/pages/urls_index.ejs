@@ -7,19 +7,17 @@
   <form method="POST" action="/logout">
       <button type="submit">Logout</button>
   </form>
-  <h3> Welcome back <%= user.email %> <h3>
-    <ul>
-      <% for(var url in urlDatabase) { %>
-        <li>
-          <%= url + ': ' + urlDatabase[url] %>
 
-        <form method = "POST" action = "/urls/<%= url %>/delete" style="display: inline;">
-          <button> Delete </button>
+  <h3> Welcome back <%= user.email %> <h3>
+
+      <% for(let url in urls){ %>
+        <li>
+        <%= urls[url].shortURL %>  <%= urls[url].longURL %>
+        <form method="POST" action="/urls/<%=urls[url].shortURL%>/delete">
+            <button type="submit">Delete</button>
         </form>
-        <a href="/urls/<%= url %>">edit</a>
-         </li>
-        <% }; %>
-    </ul>
+        <%}%>
+      </li>
 </body>
 
 
