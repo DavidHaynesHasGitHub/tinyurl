@@ -61,7 +61,7 @@ app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
         shortURL: req.params.shortURL,
         urlDatabase: urlDatabase,
-        username: req.cookies.username
+        user: req.cookies.userID
     };
   res.render('pages/urls_edit', templateVars)
 });
