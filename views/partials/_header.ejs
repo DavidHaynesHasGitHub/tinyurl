@@ -7,17 +7,17 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <title>Tiny url</title>
-  <% if(username){ %>
-    <h1><%= username%></h1>
-    <form method="POST" action="/logout">
-        <button type="submit">Logout</button>
-    </form>
-  <% } else { %>
+
     <form method="POST" action="/login">
-        <input type="text" name="username">
+        <input type="email" name="email">
+        <input type="password" name="password">
         <button type="submit">Login</button>
     </form>
-  <% } %>
+
+    <form method="POST" action="/registerform">
+        <button type="submit">Register</button>
+    </form>
+
 </body>
 
 </html>

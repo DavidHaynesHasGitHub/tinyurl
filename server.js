@@ -1,36 +1,58 @@
-var express = require("express");
-var app = express();
-var express = require('express')
-var cookieParser = require('cookie-parser')
-var PORT = process.env.PORT || 8080;
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 8080;
 
-var app = express()
+const cookieParser = require('cookie-parser')
 app.use(cookieParser())
-
-app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.set("view engine", "ejs");
+
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/urls", (req, res) => {
-  let templateVars = {
-       urlDatabase: urlDatabase,
-       username: req.cookies.usernameCookie
-     };
 
-     console.log(templateVars.username)
-  res.render("pages/urls_index", templateVars);
+let usersDB = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+//ALL GET REQUESTS
+app.get('/urls', (req, res) => {
+  let userID = req.cookies.userID
+    let templateVars = {
+         urlDatabase: urlDatabase,
+         user: usersDB[userID]
+      };
+
+  res.render('pages/urls_index', templateVars);
+});
+
+app.get('/home', (req, res) => {
+  res.render('pages/home');
+});
+
+app.get('/register', (req, res) => {
+  console.log('REGISTER PAGE RENDERED')
+  res.render('pages/register');
 });
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
        urlDatabase: urlDatabase,
-       username: req.cookies.usernameCookie
+       usersDB: usersDB
      };
   res.render("pages/urls_new", templateVars);
 });
@@ -39,10 +61,12 @@ app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
         shortURL: req.params.shortURL,
         urlDatabase: urlDatabase,
-        username: req.cookies.usernameCookie
+        username: req.cookies.username
     };
   res.render('pages/urls_edit', templateVars)
 });
+
+//ALL POST REQUESTS
 
 //shows original plus new short url
 app.post("/urls/:shortURL/edit", (req, res) => {
@@ -64,24 +88,57 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect('/urls/');
 });
 
+app.post('/registerform', (req, res) => {
+    res.render('pages/register');
+});
 
+app.post('/register', (req, res) => {
+  let newID = generateRandomString();
+  let newUser = {};
+  newUser = {
+    id : newID,
+    email : req.body.email,
+    password : req.body.password
+  };
+  res.cookie('userID', newUser.id)
+  usersDB[newID] = newUser
+  res.redirect('/home');
+});
 // handles login form
+
 app.post("/login", (req, res) =>{
-  let username = req.body.username
-  res.cookie('usernameCookie', username)
-  res.redirect("/urls");
+  let user;
+  for (let userID in usersDB){
+    const usrChek = usersDB[userID]
+    if(usrChek.email === req.body.email){
+        user = usrChek
+        break
+    }
+  }
+  if(user){
+    if(user.password === req.body.password){
+      console.log('IT WORKED', user)
+      res.cookie('userID', user.id)
+      res.redirect('/urls')
+    } else {
+      res.status(401).send('password not there')
+    }
+  } else {
+    res.status(401).send('user not there')
+  }
+
 });
 
 app.post("/logout", (req, res) =>{
-  let username = req.body.username
-  res.clearCookie('usernameCookie')
-  res.redirect("/urls");
+  let username = req.body.email
+  res.clearCookie('userID')
+  res.redirect("/home");
 });
 
 //generates random number for hash generator
 function generateRandomString() {
   let rando = Math.floor(Math.random() * 6969696969).toString();
-    return rando.hashCode()
+    return rando.hashCode();
 };
 
 //generates hash code
@@ -100,5 +157,3 @@ String.prototype.hashCode = function() {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-//this is on the develop branch srvawrvawegf
