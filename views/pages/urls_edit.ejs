@@ -4,8 +4,9 @@
 <head></head>
 
 <body style="font-size:20px; padding:50px;">
-  <% include ../partials/_header %>
-
+  <form method="POST" action="/logout">
+      <button type="submit">Logout</button>
+  </form>
   <h3><%= 'Your new short url is: ' + shortURL %></h3>
 
   <form method="POST" action="/urls/<%=shortURL%>/edit" style="display: inline;">
