@@ -10,6 +10,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
+let urlPerUserID = {
+    userRandomID: {
+        'b2xVn2': 'http://www.lighthouselabs.ca',
+        '9sm5xK': 'http://www.google.com'
+    },
+    user2RandomID: {
+        'test': 'test.com'
+    }
+};
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -31,13 +40,15 @@ let usersDB = {
 }
 //ALL GET REQUESTS
 app.get('/urls', (req, res) => {
-  let userID = req.cookies.userID
-    let templateVars = {
-         urlDatabase: urlDatabase,
-         user: usersDB[userID]
-      };
-
-  res.render('pages/urls_index', templateVars);
+  let templateVars = {
+       urlDatabase: urlDatabase,
+       user: usersDB[req.cookies.userID]
+  };
+  if(req.cookies.userID){
+    res.render('pages/urls_index', templateVars);
+  } else {
+    res.render('pages/home')
+  }
 });
 
 app.get('/home', (req, res) => {
@@ -54,7 +65,11 @@ app.get("/urls/new", (req, res) => {
        urlDatabase: urlDatabase,
        usersDB: usersDB
      };
-  res.render("pages/urls_new", templateVars);
+     if(req.cookies.userID){
+       res.render("pages/urls_new", templateVars);
+     } else {
+       res.render('pages/home')
+     }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -63,7 +78,11 @@ app.get("/urls/:shortURL", (req, res) => {
         urlDatabase: urlDatabase,
         user: req.cookies.userID
     };
-  res.render('pages/urls_edit', templateVars)
+    if(req.cookies.userID){
+      res.render('pages/urls_edit', templateVars)
+    } else {
+      res.render('pages/home')
+    }
 });
 
 //ALL POST REQUESTS
@@ -117,7 +136,6 @@ app.post("/login", (req, res) =>{
   }
   if(user){
     if(user.password === req.body.password){
-      console.log('IT WORKED', user)
       res.cookie('userID', user.id)
       res.redirect('/urls')
     } else {
@@ -126,7 +144,6 @@ app.post("/login", (req, res) =>{
   } else {
     res.status(401).send('user not there')
   }
-
 });
 
 app.post("/logout", (req, res) =>{
@@ -157,3 +174,5 @@ String.prototype.hashCode = function() {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+//asdfvaweara
