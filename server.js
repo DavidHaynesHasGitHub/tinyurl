@@ -51,7 +51,6 @@ app.get('/urls', (req, res) => {
           urlsTemp[key] = checkData
         }
       };
-      console.log(urlsTemp)
     let templateVars = {
       urls: urlsTemp,
       user: user
@@ -85,12 +84,17 @@ app.get("/urls/new", (req, res) => {
     }
 });
 
+//gets data of url to edit and and renders edit page
 app.get("/urls/:shortURL", (req, res) => {
   if(req.cookies.userID){
+    let user = usersDB[req.cookies.userID];
+    let urlsTemp = {};
+    let url = urlData[req.params.shortURL]
     let templateVars = {
-      urlData: urlData,
-      user: usersDB[req.cookies.userID]
+      url: url,
+      user: user
     };
+    console.log('tempvars', templateVars)
     res.render('pages/urls_edit', templateVars)
   } else {
     res.render('pages/home')
@@ -100,12 +104,10 @@ app.get("/urls/:shortURL", (req, res) => {
 //ALL POST REQUESTS
 
 //shows original plus new short url
-app.post("/urls/:shortURL/edit", (req, res) => {
-    let templateVars = {
-      urlData: urlData,
-      user: usersDB[req.cookies.userID]
-    }
-    res.redirect('/urls')
+app.post("/urls/:shortURL", (req, res) => {
+  console.log(req.params.shortURL)
+urlData[req.params.shortURL].longURL = req.body.longURL
+  res.redirect('/urls/')
 });
 
 //adds new url to database

@@ -7,16 +7,15 @@
   <form method="POST" action="/logout">
       <button type="submit">Logout</button>
   </form>
-  <h3><%= 'Your new short url is: ' + shortURL %></h3>
+  <h3>Your short url is:   <%= url.shortURL %> </h3>
+  <h3>Your long url is: <%= url.longURL %> </h3>
 
-  <form method="POST" action="/urls/<%=shortURL%>/edit" style="display: inline;">
-
-    <label for="longURL">Your long url</label>
-
-      <input id="longURL" type="text" name="longURL" placeholder = '<%= urlDatabase[shortURL] %>' style="width: 300px">
-      <input type="submit" value="Submit">
-
+  <form action="/urls/<%=url.shortURL%>" method="POST" style="margin:150px;">
+    <label for="longURL">Edit your long URL:</label>
+    <input id="longURL" type="text" name="longURL" placeholder="<%= url.longURL %>" style="width: 300px">
+    <input type="submit" value="Edit">
   </form>
+
 
 </body>
 
