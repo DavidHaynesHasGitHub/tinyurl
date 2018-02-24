@@ -1,16 +1,15 @@
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
-
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
-
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
-var urlData = {
+//database of urls by key of shortURL
+let urlData = {
   "b2xVn2": {
     shortURL: "b2xVn2",
     longURL : "http://www.lighthouselabs.ca",
@@ -28,6 +27,7 @@ var urlData = {
   }
 };
 
+//database of users by userID
 let usersDB = {
   "userRandomID": {
     id: "userRandomID",
@@ -103,32 +103,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //ALL POST REQUESTS
 
-//shows original plus new short url
-app.post("/urls/:shortURL", (req, res) => {
-  console.log(req.params.shortURL)
-urlData[req.params.shortURL].longURL = req.body.longURL
-  res.redirect('/urls/')
-});
-
-//adds new url to database
-app.post("/urls/", (req, res) => {
-  let shortURL = generateRandomString();
-  var tempObject = {};
-  tempObject = {
-    shortURL: shortURL,
-    longURL: req.body.longURL,
-    userID: req.cookies.userID
-  };
-  urlData[shortURL] = tempObject;
-  res.redirect(`/urls/`);
-});
-
-//deletes element in database
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlData[req.params.shortURL]
-  res.redirect('/urls/');
-});
-
 //sends to registration form
 app.post('/registerform', (req, res) => {
     res.render('pages/register');
@@ -146,6 +120,7 @@ app.post('/register', (req, res) => {
   usersDB[newID] = newUser
   res.redirect('/home');
 });
+
 // handles login form
 
 //checks userDB for if user email is found then checks if password is correct
@@ -175,6 +150,32 @@ app.post("/logout", (req, res) =>{
   let username = req.body.email
   res.clearCookie('userID')
   res.redirect("/home");
+});
+
+//adds new url to database
+app.post("/urls/", (req, res) => {
+  let shortURL = generateRandomString();
+  var tempObject = {};
+  tempObject = {
+    shortURL: shortURL,
+    longURL: req.body.longURL,
+    userID: req.cookies.userID
+  };
+  urlData[shortURL] = tempObject;
+  res.redirect(`/urls/`);
+});
+
+//shows original plus new short url
+app.post("/urls/:shortURL", (req, res) => {
+  console.log(req.params.shortURL)
+  urlData[req.params.shortURL].longURL = req.body.longURL
+  res.redirect('/urls/')
+});
+
+//deletes element in database
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlData[req.params.shortURL]
+  res.redirect('/urls/');
 });
 
 //generates random number for hash generator
