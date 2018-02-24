@@ -1,11 +1,10 @@
 const express = require("express");
-const app = express();
 const PORT = process.env.PORT || 8080;
 const cookieParser = require('cookie-parser')
-app.use(cookieParser())
 const bodyParser = require("body-parser");
+const app = express();
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.set("view engine", "ejs");
 
 //database of urls by key of shortURL
@@ -101,6 +100,13 @@ app.get("/urls/:shortURL", (req, res) => {
     }
 });
 
+//redirects to the longURL
+app.get("/u/:shortURL", (req, res) => {
+ let url = urlData[req.params.shortURL]
+ let longURL = url.longURL
+ res.redirect(longURL)
+});
+
 //ALL POST REQUESTS
 
 //sends to registration form
@@ -124,7 +130,7 @@ app.post('/register', (req, res) => {
 // handles login form
 
 //checks userDB for if user email is found then checks if password is correct
-app.post("/login", (req, res) =>{
+app.post("/login", (req, res) => {
   let user;
   for (let userID in usersDB){
     const usrChek = usersDB[userID]
@@ -146,7 +152,7 @@ app.post("/login", (req, res) =>{
 });
 
 //clears userID cookie and redirects home
-app.post("/logout", (req, res) =>{
+app.post("/logout", (req, res) => {
   let username = req.body.email
   res.clearCookie('userID')
   res.redirect("/home");
