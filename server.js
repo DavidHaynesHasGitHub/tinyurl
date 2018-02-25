@@ -1,12 +1,21 @@
 const express = require("express");
 const PORT = process.env.PORT || 8080;
 const cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const app = express();
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+app.use(cookieSession({
+    name: 'session',
+    keys: ['key1', 'key2', 'key3'],
+
+    // Cookie Options
+    // Session length is 2 hours
+    maxAge: 2 * 60 * 60 * 1000
+}));
 
 //database of urls by key of shortURL
 let urlData = {
@@ -43,7 +52,7 @@ let usersDB = {
 //ALL GET REQUESTS
 app.get('/urls', (req, res) => {
   if(req.cookies.userID){
-    let user = usersDB[req.cookies.userID]
+    let user = usersDB[req.session.userID]
     let urlsTemp = {}
     for(let key in urlData){
        let checkData = urlData[key]
@@ -73,10 +82,10 @@ app.get('/register', (req, res) => {
 
 //only renders urls/new if user is logged in
 app.get("/urls/new", (req, res) => {
-  if(req.cookies.userID){
+  if(req.session.userID){
     let templateVars = {
       urlData: urlData,
-      user: usersDB[req.cookies.userID]
+      user: usersDB[req.session.userID]
     };
     res.render("pages/urls_new", templateVars);
   } else {
@@ -86,8 +95,8 @@ app.get("/urls/new", (req, res) => {
 
 //gets data of url to edit and and renders edit page
 app.get("/urls/:shortURL", (req, res) => {
-  if(req.cookies.userID){
-    let user = usersDB[req.cookies.userID];
+  if(req.session.userID){
+    let user = usersDB[req.session.userID];
     let urlsTemp = {};
     let url = urlData[req.params.shortURL]
     let templateVars = {
@@ -143,7 +152,7 @@ app.post("/login", (req, res) => {
   }
   if(user){
     if(bcrypt.compareSync(req.body.password, user.password,)){
-      res.cookie('userID', user.id)
+      req.session.userID = user.id
       res.redirect('/urls')
     } else {
       res.status(401).send('password not there')
@@ -156,7 +165,7 @@ app.post("/login", (req, res) => {
 //clears userID cookie and redirects home
 app.post("/logout", (req, res) => {
   let username = req.body.email
-  res.clearCookie('userID')
+  res.clearSession('userID')
   res.redirect("/home");
 });
 
@@ -167,7 +176,7 @@ app.post("/urls/", (req, res) => {
   tempObject = {
     shortURL: shortURL,
     longURL: req.body.longURL,
-    userID: req.cookies.userID
+    userID: req.session.userID
   };
   urlData[shortURL] = tempObject;
   res.redirect(`/urls/`);
