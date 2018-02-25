@@ -11,9 +11,6 @@ app.set("view engine", "ejs");
 app.use(cookieSession({
     name: 'session',
     keys: ['key1', 'key2', 'key3'],
-
-    // Cookie Options
-    // Session length is 2 hours
     maxAge: 2 * 60 * 60 * 1000
 }));
 
@@ -70,7 +67,7 @@ app.get('/urls', (req, res) => {
   }
 });
 
-//loads homoe page
+//loads home page
 app.get('/home', (req, res) => {
   res.render('pages/home');
 });
@@ -125,6 +122,7 @@ app.post('/registerform', (req, res) => {
 });
 
 //generates unique user id and adds data to userDB
+//saves userID, email and password. used bcrypt to hash the password
 app.post('/register', (req, res) => {
   let newID = generateRandomString();
   let newUser = {};
@@ -134,13 +132,13 @@ app.post('/register', (req, res) => {
     email : req.body.email,
     password :  bcrypt.hashSync(password, 10)
   };
+  req.session.userID = newID
   usersDB[newID] = newUser
-  res.redirect('/home');
+  res.redirect('/urls');
 });
 
-// handles login form
-
 //checks userDB for if user email is found then checks if password is correct
+//if all is correct then it redirects to the index page where they can see their urls
 app.post("/login", (req, res) => {
   let user;
   for (let userID in usersDB){
@@ -162,11 +160,11 @@ app.post("/login", (req, res) => {
   }
 });
 
-//clears userID cookie and redirects home
+//clears userID session and redirects home
 app.post("/logout", (req, res) => {
   let username = req.body.email
-  res.clearSession('userID')
-  res.redirect("/home");
+  res.session = null
+  res.status(302).redirect('http://localhost:8080/home/');
 });
 
 //adds new url to database
@@ -201,7 +199,7 @@ function generateRandomString() {
     return rando.hashCode();
 };
 
-//generates hash code
+//generates hash code with the input provided by the RNG above
 String.prototype.hashCode = function() {
   var hash = 0, i, chr;
   if (this.length === 0) return hash;
