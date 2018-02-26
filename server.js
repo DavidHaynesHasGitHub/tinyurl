@@ -8,6 +8,7 @@ const app = express();
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+
 app.use(cookieSession({
     name: 'session',
     keys: ['key1', 'key2', 'key3'],
@@ -63,13 +64,13 @@ app.get('/urls', (req, res) => {
     };
     res.render('pages/urls_index', templateVars);
   } else {
-    res.render('pages/home')
+    res.render('pages/urls_home')
   }
 });
 
 //loads home page
-app.get('/home', (req, res) => {
-  res.render('pages/home');
+app.get('/tinyApp', (req, res) => {
+  res.render('pages/urls_home');
 });
 
 //loads registration page
@@ -86,7 +87,7 @@ app.get("/urls/new", (req, res) => {
     };
     res.render("pages/urls_new", templateVars);
   } else {
-    res.render('pages/home')
+    res.render('pages/urls_home')
     }
 });
 
@@ -100,10 +101,9 @@ app.get("/urls/:shortURL", (req, res) => {
       url: url,
       user: user
     };
-    console.log('tempvars', templateVars)
     res.render('pages/urls_edit', templateVars)
   } else {
-    res.render('pages/home')
+    res.render('pages/urls_home')
     }
 });
 
@@ -164,7 +164,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   let username = req.body.email
   res.session = null
-  res.status(302).redirect('http://localhost:8080/home/');
+  res.status(302).redirect('http://localhost:8080/tinyApp/');
 });
 
 //adds new url to database
@@ -182,7 +182,6 @@ app.post("/urls/", (req, res) => {
 
 //shows original plus new short url
 app.post("/urls/:shortURL", (req, res) => {
-  console.log(req.params.shortURL)
   urlData[req.params.shortURL].longURL = req.body.longURL
   res.redirect('/urls/')
 });
@@ -195,8 +194,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //generates random number for hash generator
 function generateRandomString() {
-  let rando = Math.floor(Math.random() * 6969696969).toString();
-    return rando.hashCode();
+  let randNum = Math.floor(Math.random() * 6969696969).toString();
+    return randoNum.hashCode();
 };
 
 //generates hash code with the input provided by the RNG above
