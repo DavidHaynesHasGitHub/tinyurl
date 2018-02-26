@@ -195,7 +195,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 //generates random number for hash generator
 function generateRandomString() {
   let randNum = Math.floor(Math.random() * 6969696969).toString();
-    return randoNum.hashCode();
+    return randNum.hashCode();
 };
 
 //generates hash code with the input provided by the RNG above
