@@ -49,7 +49,7 @@ let usersDB = {
 }
 //ALL GET REQUESTS
 app.get('/urls', (req, res) => {
-  if(req.cookies.userID){
+  if(req.session.userID){
     let user = usersDB[req.session.userID]
     let urlsTemp = {}
     for(let key in urlData){
