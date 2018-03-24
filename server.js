@@ -47,6 +47,10 @@ let usersDB = {
     password: "dishwasher-funk"
   }
 }
+
+app.get('/', (req, res)=>{
+  res.render('pages/urls_home')
+})
 //ALL GET REQUESTS
 app.get('/urls', (req, res) => {
   if(req.session.userID){
